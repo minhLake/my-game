@@ -50,12 +50,22 @@ cc.Class({
         // 初始化键盘输入监听
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_UP, this.onKeyUp, this);
+
+        // 监听触摸
+        var touchReceiver = cc.Canvas.instance.node;
+        touchReceiver.on('touchstart', this.onTouchStart, this);
+        touchReceiver.on('touchend', this.onTouchEnd, this);
     },
 
     onDestroy() {
         // 取消键盘输入监听
         cc.systemEvent.off(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
         cc.systemEvent.off(cc.SystemEvent.EventType.KEY_UP, this.onKeyUp, this);
+
+        // 取消监听触摸
+        var touchReceiver = cc.Canvas.instance.node;
+        touchReceiver.off('touchstart', this.onTouchStart, this);
+        touchReceiver.off('touchend', this.onTouchEnd, this);
     },
 
     setJumpAction: function () {
@@ -82,9 +92,11 @@ cc.Class({
         // set a flag when key pressed
         switch (event.keyCode) {
             case cc.macro.KEY.a:
+            case cc.macro.KEY.left:
                 this.accLeft = true;
                 break;
             case cc.macro.KEY.d:
+            case cc.macro.KEY.right:
                 this.accRight = true;
                 break;
         }
@@ -94,12 +106,31 @@ cc.Class({
         // unset a flag when key released
         switch (event.keyCode) {
             case cc.macro.KEY.a:
+            case cc.macro.KEY.left:
                 this.accLeft = false;
                 break;
             case cc.macro.KEY.d:
+            case cc.macro.KEY.right:
                 this.accRight = false;
                 break;
         }
+    },
+
+    onTouchStart(event) {
+        var touchLoc = event.getLocation();
+        if(touchLoc.x >= cc.winSize.width/2) {
+            this.accLeft = true;
+            this.accRight = false;
+        }
+        else {
+            this.accLeft = false;
+            this.accRight = true;
+        }
+    },
+
+    onTouchEnd(event) {
+        this.accLeft = false;
+        this.accRight = false;
     },
 
     startMoveAt: function (pos) {
