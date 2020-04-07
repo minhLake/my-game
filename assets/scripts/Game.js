@@ -14,6 +14,11 @@ cc.Class({
             default: null,
             type: cc.Prefab
         },
+        // 这个属性引用了星星动画的预制资源
+        animRootPrefab: {
+            default: null,
+            type: cc.Prefab
+        },
         // 星星产生后消失时间的随机范围
         maxStarDuration: 0,
         minStarDuration: 0,
@@ -58,6 +63,7 @@ cc.Class({
         this.timer = 0;
         this.starDuration = 0;
         this.currentStart = null;
+        this.currentAnimRoot = null;
 
         // 生成一个新的星星
         // this.spawnNewStar();
@@ -70,6 +76,7 @@ cc.Class({
 
         //初始化星星对象池
         this.starPool = new cc.NodePool('Star');
+        this.scorePool = new cc.NodePool('ScoreAnim');
     },
 
     spawnNewStar: function () {
@@ -100,6 +107,22 @@ cc.Class({
         this.spawnNewStar();
     },
 
+    spawnAnimRoot: function () {
+        var fx;
+        if(this.scorePool.size() > 0) {
+            fx = this.scorePool.get(this);
+        }
+        else {
+            fx = cc.instantiate(this.animRootPrefab);
+            fx.getComponent('ScoreAnim').reuse(this);
+        }
+        return fx;
+    },
+
+    despawnAnimRoot() {
+        this.scorePool.put(this.currentAnimRoot);
+    },
+
     getNewStarPosition: function () {
         var randX = 0;
         // 根据地平面位置和主角跳跃高度，随机得到一个星星的 y 坐标
@@ -111,10 +134,15 @@ cc.Class({
         return cc.v2(randX, randY);
     },
 
-    gainScore: function () {
+    gainScore: function (pos) {
         this.score += 1;
         // 更新 scoreDisplay Label 的文字
         this.scoreDisplay.string = 'Score: ' + this.score.toString();
+        // 播放特效
+        this.currentAnimRoot = this.spawnAnimRoot();
+        this.node.addChild(this.currentAnimRoot);
+        this.currentAnimRoot.setPosition(pos);
+        this.currentAnimRoot.getComponent(cc.Animation).play('score_pop');
         // 播放得分音效
         cc.audioEngine.playEffect(this.scoreAudio, false);
     },
@@ -153,6 +181,7 @@ cc.Class({
         // 就会调用游戏失败逻辑
         if (this.timer > this.starDuration) {
             this.gameOver();
+            this.enabled = false;
             return;
         }
         this.timer += dt;
