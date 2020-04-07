@@ -119,12 +119,12 @@ cc.Class({
     onTouchStart(event) {
         var touchLoc = event.getLocation();
         if(touchLoc.x >= cc.winSize.width/2) {
-            this.accLeft = true;
-            this.accRight = false;
-        }
-        else {
             this.accLeft = false;
             this.accRight = true;
+        }
+        else {
+            this.accLeft = true;
+            this.accRight = false;
         }
     },
 
