@@ -1,5 +1,5 @@
 {
-  "title": "start_project",
+  "title": "pick_the_stars",
   "packageName": "",
   "startScene": "503322d6-b6b3-466e-85e7-ddf661906485",
   "excludeScenes": [],
@@ -15,7 +15,7 @@
   "inlineSpriteFrames_native": true,
   "mergeStartScene": false,
   "optimizeHotUpdate": false,
-  "md5Cache": false,
+  "md5Cache": true,
   "encryptJs": true,
   "xxteaKey": "d9a6217b-eb75-49",
   "zipCompressJs": true,
@@ -31,7 +31,7 @@
   },
   "win32": {},
   "android-instant": {
-    "REMOTE_SERVER_ROOT": "",
+    "REMOTE_SERVER_ROOT": "http://192.168.1.91:7456/preview-android-instant/",
     "host": "",
     "packageName": "",
     "pathPattern": "",
@@ -39,5 +39,6 @@
     "scheme": "https",
     "skipRecord": false
   },
-  "appBundle": false
+  "appBundle": false,
+  "includeAnySDK": false
 }
