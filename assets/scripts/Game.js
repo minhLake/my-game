@@ -41,6 +41,11 @@ cc.Class({
         btnNode: {
             default: null,
             type: cc.Node
+        },
+        //游戏结束文本节点
+        gameOverNode: {
+            default: null,
+            type: cc.Node
         }
     },
 
@@ -52,6 +57,7 @@ cc.Class({
         // 初始化计时器
         this.timer = 0;
         this.starDuration = 0;
+        this.currentStart = null;
 
         // 生成一个新的星星
         // this.spawnNewStar();
@@ -61,20 +67,37 @@ cc.Class({
 
         // 初始化计分
         this.score = 0;
+
+        //初始化星星对象池
+        this.starPool = new cc.NodePool('Star');
     },
 
     spawnNewStar: function () {
+        var newStar = null;
         // 使用给定的模板在场景中生成一个新节点
-        var newStar = cc.instantiate(this.starPrefab);
-        // 将新增的节点添加到 Canvas 节点下面
-        this.node.addChild(newStar);
+        if(this.starPool.size() > 0) {
+            newStar = this.starPool.get(this);
+        }
+        else {
+            newStar = cc.instantiate(this.starPrefab);
+            newStar.getComponent('Star').reuse(this);
+        }
         // 为星星设置一个随机位置
         newStar.setPosition(this.getNewStarPosition());
+        // 将新增的节点添加到 Canvas 节点下面
+        this.node.addChild(newStar);
         // 在星星组件上暂存 Game 对象的引用
         newStar.getComponent('Star').game = this;
         // 重置计时器，根据消失时间范围随机取一个值
         this.starDuration = this.minStarDuration + Math.random() * (this.maxStarDuration - this.minStarDuration);
         this.timer = 0;
+
+        this.currentStart = newStar;
+    },
+
+    despawnStar (star) {
+        this.starPool.put(star);
+        this.spawnNewStar();
     },
 
     getNewStarPosition: function () {
@@ -97,8 +120,12 @@ cc.Class({
     },
 
     gameOver: function () {
+        this.gameOverNode.active = true;//展示游戏结束文本
+        this.btnNode.x = 0;//展示开始按钮
+        this.player.getComponent('Player').enabled = false;
         this.player.stopAllActions(); //停止 player 节点的跳跃动作
-        cc.director.loadScene('game');
+        // cc.director.loadScene('game');
+        this.currentStart.destroy();//销毁场景中的星星
     },
 
     onStartGame: function () {
@@ -107,6 +134,8 @@ cc.Class({
         this.scoreDisplay.string = 'Score: ' + this.score.toString();
         //打开游戏开关
         this.enabled = true;
+        //关闭游戏结束文本文本
+        this.gameOverNode.active = false;
         //将按钮与游戏结束文本一起移出场景
         this.btnNode.x = 3000;
         //重新设置palyer的位置与移动速度
