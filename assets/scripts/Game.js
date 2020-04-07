@@ -36,6 +36,11 @@ cc.Class({
         scoreAudio: {
             default: null,
             type: cc.AudioClip
+        },
+        //按钮节点，用于开始游戏
+        btnNode: {
+            default: null,
+            type: cc.Node
         }
     },
 
@@ -47,8 +52,13 @@ cc.Class({
         // 初始化计时器
         this.timer = 0;
         this.starDuration = 0;
+
         // 生成一个新的星星
-        this.spawnNewStar();
+        // this.spawnNewStar();
+
+        //控制是否展示菜单或者开始游戏
+        this.enabled = false;
+
         // 初始化计分
         this.score = 0;
     },
@@ -89,6 +99,20 @@ cc.Class({
     gameOver: function () {
         this.player.stopAllActions(); //停止 player 节点的跳跃动作
         cc.director.loadScene('game');
+    },
+
+    onStartGame: function () {
+        //初始化得分
+        this.score = 0;
+        this.scoreDisplay.string = 'Score: ' + this.score.toString();
+        //打开游戏开关
+        this.enabled = true;
+        //将按钮与游戏结束文本一起移出场景
+        this.btnNode.x = 3000;
+        //重新设置palyer的位置与移动速度
+        this.player.getComponent('Player').startMoveAt(cc.v2(0, this.groundY));
+        //生成星星
+        this.spawnNewStar();
     },
 
     start() {

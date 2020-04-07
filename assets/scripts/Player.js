@@ -33,9 +33,11 @@ cc.Class({
     },
 
     onLoad: function () {
+        this.enabled = false;
+
         // 初始化跳跃动作
         this.jumpAction = this.setJumpAction();
-        this.node.runAction(this.jumpAction);
+        // this.node.runAction(this.jumpAction);
 
         // 加速度方向开关
         this.accLeft = false;
@@ -92,6 +94,13 @@ cc.Class({
                 this.accRight = false;
                 break;
         }
+    },
+
+    startMoveAt: function (pos) {
+        this.enabled = true;
+        this.xSpeed = 0;
+        this.node.setPosition(pos);
+        this.node.runAction(this.setJumpAction());
     },
 
     update: function (dt) {
