@@ -17,6 +17,8 @@ cc.Class({
         maxMoveSpeed: 0,
         //加速度
         accel: 0,
+        //辅助形变时间
+        squashDuration: 0,
         // 跳跃音效资源
         jumpAudio: {
             default: null,
@@ -61,10 +63,14 @@ cc.Class({
         var jumpUp = cc.moveBy(this.jumpDuration, cc.v2(0, this.jumpHeight)).easing(cc.easeCubicActionOut());
         // 下落
         var jumpDown = cc.moveBy(this.jumpDuration, cc.v2(0, -this.jumpHeight)).easing(cc.easeCubicActionIn());
+        // 形变
+        var squash = cc.scaleTo(this.squashDuration, 1, 0.6);
+        var stretch = cc.scaleTo(this.squashDuration, 1, 1.2);
+        var scaleBack = cc.scaleTo(this.squashDuration, 1, 1);
         // 添加一个回调函数，用于在动作结束时调用我们定义的其他方法
         var callback = cc.callFunc(this.playJumpSound, this);
         // 不断重复
-        return cc.repeatForever(cc.sequence(jumpUp, jumpDown, callback));
+        return cc.repeatForever(cc.sequence( squash, stretch, jumpUp, scaleBack, jumpDown, callback));
     },
 
     playJumpSound: function () {
