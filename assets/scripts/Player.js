@@ -118,5 +118,15 @@ cc.Class({
 
         // 根据当前速度更新主角的位置
         this.node.x += this.xSpeed * dt;
+
+        //限制主角活动范围
+        if( this.node.x > this.node.parent.width/2 ) {
+            this.node.x = this.node.parent.width/2;
+            this.xSpeed = 0;
+        }
+        else if( this.node.x < -this.node.parent.width/2 ) {
+            this.node.x = -this.node.parent.width/2;
+            this.xSpeed = 0;
+        }
     },
 });
